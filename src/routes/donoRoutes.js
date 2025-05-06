@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const DonoController = require('../controllers/donoController');
 
-router.get('/donos', DonoController.getAllDonos); // Alterado de '/dono' para '/donos'
-router.get('/donos/:id', DonoController.getDonoById); // Alterado de '/dono/:id' para '/donos/:id'
-router.post('/donos', DonoController.createDono); // Alterado de '/dono' para '/donos'
-router.put('/donos/:id', DonoController.updateDono); // Alterado de '/dono/:id' para '/donos/:id'
-router.delete('/donos/:id', DonoController.deleteDono); // Alterado de '/dono/:id' para '/donos/:id'
+router.get('/dono', DonoController.getAllDonos);
+router.put('/dono/:id', DonoController.updateDono);
+router.post('/dono', DonoController.createDono);
+router.put('/dono/:id', DonoController.updateDono); // Corrigido de '/donos/:id' para '/dono/:id'
+router.delete('/dono/:id', DonoController.deleteDono);
 
 module.exports = router;

@@ -1,17 +1,13 @@
 const AnimalModel = require('../models/AnimalModel');
 
 const getAllAnimais = async (req, res) => {
-    try {
-        const { name } = req.query;
-        const animais = await AnimalModel.getAnimais(name); // Certifique-se de que este método existe no modelo
-        if (!animais || animais.length === 0) {
-            return res.status(404).json({ message: 'Nenhum animal encontrado' });
-        }
-        res.status(200).json(animais);
-    } catch (error) {
-        console.error('Erro ao buscar animais:', error); // Adicione logs para depuração
-        res.status(500).json({ message: 'Erro ao buscar animais', error: error.message });
-    }
+try {
+    const { name } = req.query;
+    const animais = await AnimalModel.getAnimais(name); 
+    res.json(animais);
+} catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar animais' });
+}
 };
 
 const getAnimalById = async (req, res) => {
@@ -28,24 +24,30 @@ const getAnimalById = async (req, res) => {
 
 const createAnimal = async (req, res) => {
     try {
-        const {name, tipo, raça} = req.body;
-        const animal = await AnimalModel.createAnimal(name, tipo, raça);
+        const { name, tipo, raca, dono_id } = req.body; // Certifique-se de que "raca" está sendo extraído
+        const animal = await AnimalModel.createAnimal(name, tipo, raca, dono_id);
         res.status(201).json(animal);
     } catch (error) {
+        console.error('Erro ao criar animal:', error);
         res.status(500).json({ message: 'Erro ao criar animal' });
     }
 };
 
 const updateAnimal = async (req, res) => {
     try {
-     const { name, tipo, dono_id } = req.body;
-     const animal = await AnimalModel.updateAnimal(req.params.id, name, tipo, dono_id);
-        if (!animal) {
-        return res.status(404).json({ message: 'Animal não encontrado' });
+        const { id } = req.params; // Obtém o ID do animal da URL
+        const { name, tipo, raca, dono_id } = req.body; // Obtém os dados do corpo da requisição
+
+        const animalAtualizado = await AnimalModel.updateAnimal(id, name, tipo, raca, dono_id);
+
+        if (!animalAtualizado) {
+            return res.status(404).json({ message: 'Animal não encontrado' });
         }
-        res.status(200).json(animal); 
+
+        res.status(200).json(animalAtualizado); // Retorna o animal atualizado
     } catch (error) {
-      res.status(500).json({ message: 'Erro ao atualizar animal' });
+        console.error('Erro ao atualizar animal:', error);
+        res.status(500).json({ message: 'Erro ao atualizar animal' });
     }
 };
 

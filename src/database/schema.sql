@@ -14,18 +14,17 @@ CREATE TABLE animal (
     name VARCHAR(255) NOT NULL,
     tipo VARCHAR(255) NOT NULL,
     dono_id INTEGER REFERENCES dono(id) ON DELETE CASCADE,
-    raça VARCHAR(255) NOT NULL
+    raca VARCHAR(255) NOT NULL -- Alterado de "raça" para "raca"
 );
 
 INSERT INTO dono (name, photo) VALUES 
     ('João', NULL),
     ('Maria', NULL);
 
-INSERT INTO animal (name, tipo, dono_id, raça) VALUES 
-    ('Rex', 'Cachorro', 1, 'vira-lata'),
-    ('Mingau', 'Gato', 1, 'persa'),
-    ('Pipoca', 'Coelho',  1, 'mini-lop'),
-    ('Luna', 'Cachorro',  2, 'labrador'),
-    ('Thor', 'Gato', 2, 'siames');
+INSERT INTO animal (name, tipo, raca, dono_id)
+VALUES
+('Rex', 'Cachorro', 'Labrador', NULL),
+('Mimi', 'Gato', 'Siamês', NULL),
+('Bob', 'Cachorro', 'Bulldog', NULL);
 
 

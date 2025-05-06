@@ -1,36 +1,47 @@
 const pool = require("../config/database.js");
 
-const getAnimal = async (name) => {
-    let query = 'SELECT * FROM animais';
-    const params = [];
+const getAnimais = async (name) => {
+    try {
+        let query = 'SELECT * FROM animal'; // Certifique-se de que a tabela "animal" existe
+        const params = [];
 
-    if (name) {
-        query += ' WHERE name LIKE ?';
-        params.push(`%${name}%`);
+        if (name) {
+            query += ' WHERE name LIKE $1'; // Use $1 para parâmetros no PostgreSQL
+            params.push(`%${name}%`);
+        }
+
+        const result = await pool.query(query, params); // Executa a consulta no banco de dados
+        return result.rows; // Retorna os resultados da consulta
+    } catch (error) {
+        console.error('Erro ao executar a consulta no banco de dados:', error);
+        throw new Error('Erro ao buscar animais no banco de dados');
     }
-
-    const [rows] = await pool.query(query, params);
-    return rows;
 };
-
 
 const getAnimalById = async (id) => {
-    const result = await pool.query
-    ("SELECT animal.*, dono.name AS dono_name FROM animal LEFT JOIN dono ON animal.dono_id WHERE animal.id = $1", [id]);
+    const result = await pool.query(
+        "SELECT animal.*, dono.name AS dono_name FROM animal LEFT JOIN dono ON animal.dono_id = dono.id WHERE animal.id = $1", [id]
+    );
     return result.rows[0];
 };
 
-const createAnimal = async (name, tipo, raça, dono_id) => {
-    const result = await pool.query(
-        "INSERT INTO animal (name, tipo, raça, dono_id) VALUES ($1, $2, $3) RETURNING *",
-        [name, tipo, raça, dono_id]);
-    return result.rows[0];
+const createAnimal = async (name, tipo, raca, dono_id) => {
+    try {
+        const result = await pool.query(
+            "INSERT INTO animal (name, tipo, raca, dono_id) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, tipo, raca, dono_id]
+        );
+        return result.rows[0]; // Retorna o animal criado
+    } catch (error) {
+        console.error('Erro ao criar animal no banco de dados:', error);
+        throw new Error('Erro ao criar animal no banco de dados');
+    }
 };
 
-const updateAnimal = async (id, name, tipo, raça, dono_id) => {
+const updateAnimal = async (id, name, tipo, raca, dono_id) => { // Alterado "raça" para "raca"
     const result = await pool.query(
-        'UPDATE animal SET name = $1, tipo = $2, raça = $3, dono_id = $4 WHERE id = $5 RETURNING *',
-        [name, tipo, raça, dono_id, id]
+        'UPDATE animal SET name = $1, tipo = $2, raca = $3, dono_id = $4 WHERE id = $5 RETURNING *', // Alterado "raça" para "raca"
+        [name, tipo, raca, dono_id, id]
     );
     return result.rows[0];
 };
@@ -44,7 +55,7 @@ const deleteAnimal = async (id) => {
 };
 
 module.exports = {
-    getAnimal,
+    getAnimais,
     getAnimalById,
     createAnimal,
     updateAnimal,
