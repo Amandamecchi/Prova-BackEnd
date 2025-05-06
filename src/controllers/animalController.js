@@ -1,4 +1,5 @@
 const AnimalModel = require('../models/AnimalModel');
+const { getAnimaisPorRaca } = require('../models/AnimalModel');
 
 const getAllAnimais = async (req, res) => {
 try {
@@ -24,7 +25,7 @@ const getAnimalById = async (req, res) => {
 
 const createAnimal = async (req, res) => {
     try {
-        const { name, tipo, raca, dono_id } = req.body; // Certifique-se de que "raca" está sendo extraído
+        const { name, tipo, raca, dono_id } = req.body;
         const animal = await AnimalModel.createAnimal(name, tipo, raca, dono_id);
         res.status(201).json(animal);
     } catch (error) {
@@ -35,8 +36,8 @@ const createAnimal = async (req, res) => {
 
 const updateAnimal = async (req, res) => {
     try {
-        const { id } = req.params; // Obtém o ID do animal da URL
-        const { name, tipo, raca, dono_id } = req.body; // Obtém os dados do corpo da requisição
+        const { id } = req.params; 
+        const { name, tipo, raca, dono_id } = req.body; 
 
         const animalAtualizado = await AnimalModel.updateAnimal(id, name, tipo, raca, dono_id);
 
@@ -44,7 +45,7 @@ const updateAnimal = async (req, res) => {
             return res.status(404).json({ message: 'Animal não encontrado' });
         }
 
-        res.status(200).json(animalAtualizado); // Retorna o animal atualizado
+        res.status(200).json(animalAtualizado); 
     } catch (error) {
         console.error('Erro ao atualizar animal:', error);
         res.status(500).json({ message: 'Erro ao atualizar animal' });
@@ -64,10 +65,30 @@ const deleteAnimal = async (req, res) => {
     }
 };
 
+const getAnimaisPorRacaController = async (req, res) => {
+    const { raca } = req.query; 
+
+    if (!raca) {
+        return res.status(400).json({ error: 'O parâmetro "raca" é obrigatório.' });
+    }
+
+    try {
+        const animais = await getAnimaisPorRaca(raca);
+        if (animais.length === 0) {
+            return res.status(404).json({ message: 'Nenhum animal encontrado para a raça especificada.' });
+        }
+        res.status(200).json(animais);
+    } catch (error) {
+        console.error('Erro ao buscar animais por raça:', error);
+        res.status(500).json({ error: 'Erro ao buscar animais por raça.' });
+    }
+};
+
 module.exports = {
     getAllAnimais,
     getAnimalById,
     createAnimal,
     updateAnimal,
-    deleteAnimal
+    deleteAnimal,
+    getAnimaisPorRacaController,
 };

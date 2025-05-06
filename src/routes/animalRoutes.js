@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const AnimalController = require('../controllers/animalController');
-const apiKeyMiddleware = require('../middlewares/apiKeyMiddleware');
+const apiKeyMiddleware = require("../config/apiKey");
+router.use(apiKeyMiddleware);
 
 
 router.get('/animal', AnimalController.getAllAnimais);

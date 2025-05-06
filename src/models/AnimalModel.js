@@ -1,22 +1,33 @@
 const pool = require("../config/database.js");
 
+//filtros
 const getAnimais = async (name) => {
+try {
+  if (!name){
+    const resultado = await pool.query("SELECT * FROM animal");
+    return resultado.rows;
+  } else {
+    const resultado = await pool.query("SELECT * FROM animal WHERE name ILIKE $1", [`%${name}%`]);
+    return resultado.rows;
+  }
+} catch (error) {
+    console.error('Erro ao buscar animais:', error);
+    throw new Error('Erro ao buscar animais');
+}
+};
+
+const getAnimaisPorRaca = async (raca) => {
     try {
-        let query = 'SELECT * FROM animal'; // Certifique-se de que a tabela "animal" existe
-        const params = [];
-
-        if (name) {
-            query += ' WHERE name LIKE $1'; // Use $1 para parâmetros no PostgreSQL
-            params.push(`%${name}%`);
-        }
-
-        const result = await pool.query(query, params); // Executa a consulta no banco de dados
-        return result.rows; // Retorna os resultados da consulta
+        const query = 'SELECT * FROM animal WHERE raca = $1';
+        values = [raca];
+        const result = await pool.query(query, values);
+        return result.rows;
     } catch (error) {
         console.error('Erro ao executar a consulta no banco de dados:', error);
-        throw new Error('Erro ao buscar animais no banco de dados');
+        throw new Error;
     }
 };
+
 
 const getAnimalById = async (id) => {
     const result = await pool.query(
@@ -31,7 +42,7 @@ const createAnimal = async (name, tipo, raca, dono_id) => {
             "INSERT INTO animal (name, tipo, raca, dono_id) VALUES ($1, $2, $3, $4) RETURNING *",
             [name, tipo, raca, dono_id]
         );
-        return result.rows[0]; // Retorna o animal criado
+        return result.rows[0]; 
     } catch (error) {
         console.error('Erro ao criar animal no banco de dados:', error);
         throw new Error('Erro ao criar animal no banco de dados');
@@ -59,5 +70,6 @@ module.exports = {
     getAnimalById,
     createAnimal,
     updateAnimal,
-    deleteAnimal
+    deleteAnimal,
+    getAnimaisPorRaca,
 };
