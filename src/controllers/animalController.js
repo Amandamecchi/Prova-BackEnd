@@ -2,11 +2,15 @@ const AnimalModel = require('../models/AnimalModel');
 
 const getAllAnimais = async (req, res) => {
     try {
-        const { name} = req.query;
-        const animais = await AnimalModel.getAnimais(name);
-        res.json(animais);
+        const { name } = req.query;
+        const animais = await AnimalModel.getAnimais(name); // Certifique-se de que este método existe no modelo
+        if (!animais || animais.length === 0) {
+            return res.status(404).json({ message: 'Nenhum animal encontrado' });
+        }
+        res.status(200).json(animais);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar animais' });
+        console.error('Erro ao buscar animais:', error); // Adicione logs para depuração
+        res.status(500).json({ message: 'Erro ao buscar animais', error: error.message });
     }
 };
 
@@ -58,3 +62,10 @@ const deleteAnimal = async (req, res) => {
     }
 };
 
+module.exports = {
+    getAllAnimais,
+    getAnimalById,
+    createAnimal,
+    updateAnimal,
+    deleteAnimal
+};
